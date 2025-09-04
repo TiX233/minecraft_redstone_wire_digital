@@ -33,6 +33,7 @@
 #include "myTasks.h"
 #include "scan_LED.h"
 #include "segment_LED.h"
+#include "redstone_line.h"
 
 /* Private define ------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -93,6 +94,90 @@ struct SegmentLED_stu mySegLED = {
     .write_seg_pin = mySegLED_write_seg_pin,
 };
 
+
+struct rs_channel_stu rs_line_chs[] = {
+    [RS_LINE_CH1_up] = {
+        .status = RS_CHANNEL_STATE_release,
+        
+        .pin = {
+            .port = GPIOA,
+            .pin = GPIO_PIN_3,
+        },
+    },
+
+    [RS_LINE_CH2_down] = {
+        .status = RS_CHANNEL_STATE_release,
+        
+        .pin = {
+            .port = GPIOA,
+            .pin = GPIO_PIN_5,
+        },
+    },
+    
+    [RS_LINE_CH3_left] = {
+        .status = RS_CHANNEL_STATE_release,
+        
+        .pin = {
+            .port = GPIOA,
+            .pin = GPIO_PIN_4,
+        },
+    },
+    
+    [RS_LINE_CH4_right] = {
+        .status = RS_CHANNEL_STATE_release,
+        
+        .pin = {
+            .port = GPIOA,
+            .pin = GPIO_PIN_7,
+        },
+    },
+};
+
+rs_line_led_t rs_line_leds[] = {
+    [RS_LINE_CH1_up] = {
+        .port = SCANLED_COM3,
+        .pin = SCANLED_ONE1,
+    },
+
+    [RS_LINE_CH2_down] = {
+        .port = SCANLED_COM3,
+        .pin = SCANLED_ONE4,
+    },
+
+    [RS_LINE_CH3_left] = {
+        .port = SCANLED_COM3,
+        .pin = SCANLED_ONE2,
+    },
+
+    [RS_LINE_CH4_right] = {
+        .port = SCANLED_COM3,
+        .pin = SCANLED_ONE3,
+    },
+};
+
+struct rs_line_stu my_rs_line = {
+
+    .leds = rs_line_leds,
+
+    .led_pin_write = my_rs_line_led_pin_write,
+
+    .io = {
+        .status = RS_IO_STATE_idle,
+        .tick = RS_TICK_40_wire_release,
+
+        .channels = rs_line_chs,
+        .channel_num = RS_LINE_CH_NUM,
+        .bitmask_channel_change = 0,
+
+        .pin_read = my_rs_io_pin_read,
+        .pin_write = my_rs_io_pin_write,
+
+        .callback_channel_change = my_rs_io_callback_channel_change,
+        .callback_communication_init = my_rs_io_callback_communication_init,
+        .callback_communication_over = my_rs_io_callback_communication_over,
+    },
+};
+
 /* Private user code ---------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
@@ -112,16 +197,23 @@ int main(void)
     APP_SystemClockConfig();
 
     SEGGER_RTT_Init();
+    LOG_STR("\n\nSYSTEM START\n\n");
     
+    HAL_Delay(1);
     my_GPIO_init();
 
-    myTask_init();
+
+    myTask_init(); // 创建任务
+    
+    SEG_LED_show_num(&mySegLED, SEG_LED_NUM_0);
+
+    rs_line_init(&my_rs_line);
 
     LOG_FMT("\nRed stone line init over in %dms.\n", rtx_Sys_get_tick());
 
     rtx_Sys_schedule_start(); // 开启调度
     
-    rtx_Sys_scheduler();
+    rtx_Sys_scheduler(); // 运行调度器
 
     /* infinite loop */
     while (1)

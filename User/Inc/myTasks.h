@@ -15,7 +15,10 @@ struct mt_Task_stu {
 
 
 extern struct mt_Task_stu task_heart_beat;
+extern struct mt_Task_stu task_scanLED;
+extern struct mt_Task_stu task_rs_io;
 
+extern struct rtx_Topic_stu topic_clk;
 
 int mt_Task_add(struct mt_Task_stu *task);
 

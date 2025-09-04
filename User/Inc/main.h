@@ -58,6 +58,7 @@ extern "C" {
 
 extern struct scanLED_stu myScanLED;
 extern struct SegmentLED_stu mySegLED;
+extern struct rs_line_stu my_rs_line;
 
 /* Exported functions prototypes ---------------------------------------------*/
 void APP_ErrorHandler(void);

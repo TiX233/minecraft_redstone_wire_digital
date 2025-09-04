@@ -102,12 +102,16 @@ typedef enum {
     RS_CHANNEL_STEP_max,
 } rs_channel_step_e;
 
+typedef struct {
+    GPIO_TypeDef *port;
+    uint16_t pin;
+} rs_pin_stu_t;
+
 // 通道结构体
 struct rs_channel_stu {
     rs_channel_state_e status;
 
-    uint8_t (*pin_read)(void);
-    void (*pin_write)(uint8_t state);
+    rs_pin_stu_t pin;
 
     uint8_t pin_script[RS_CHANNEL_STEP_max + 5]; // 通信过程中的预设电平变化脚本，io 管理函数会在对应的通信时刻按照脚本来改变该通道的引脚电平
 };
@@ -118,8 +122,11 @@ struct rs_io_stu {
     rs_tick_e tick;
 
     struct rs_channel_stu *channels;
-    const uint8_t channel_num;
-    uint8_t bitmask_channel_change;
+    const uint8_t channel_num; // 所管理的通道总数量
+    uint8_t bitmask_channel_change; // 通道变化标记
+
+    uint8_t (*pin_read)(struct rs_channel_stu *ch);
+    void (*pin_write)(struct rs_channel_stu *ch, uint8_t pin_state);
 
     void (*callback_channel_change)(struct rs_io_stu *io); // 某一个或几个通道电平与预设脚本不一致，调用该回调
     void (*callback_communication_init)(struct rs_io_stu *io); // 由 rs_io_communication_start 调用，用于在通信开始前做一些自定义的初始化

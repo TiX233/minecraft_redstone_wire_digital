@@ -6,9 +6,10 @@ int rs_io_communication_start(struct rs_io_stu *io){
         return -1;
     }
 
-    io->callback_communication_init(io);
-
     io->status = RS_IO_STATE_busy;
+    io->tick = RS_TICK_0_start;
+
+    io->callback_communication_init(io);
 
     return 0;
 }
@@ -22,13 +23,13 @@ void rs_io_maintainer(struct rs_io_stu *io){
         if(io->channels[i].status != RS_CHANNEL_STATE_broken){
             switch(io->tick){
                 case RS_TICK_0_start:
-                    io->channels[i].pin_write(1);
+                    io->pin_write(&(io->channels[i]), 1);
                     io->channels[i].status = RS_CHANNEL_STATE_start;
                     break;
 
                 case RS_TICK_1_check_wire:
                     io->channels[i].status = RS_CHANNEL_STATE_check;
-                    if(!(io->channels[i].pin_read())){ // 信号线低电平，认为线路出现问题，屏蔽
+                    if(!(io->pin_read(&(io->channels[i])))){ // 信号线低电平，认为线路出现问题，屏蔽
                         io->channels[i].status = RS_CHANNEL_STATE_broken;
                     }
                     io->channels[i].status = RS_CHANNEL_STATE_trans;
@@ -54,7 +55,7 @@ void rs_io_maintainer(struct rs_io_stu *io){
                 case RS_TICK_36_r1_set:
                 case RS_TICK_38_ack_set:
 
-                    io->channels[i].pin_write(io->channels[i].pin_script[io->tick/2]);
+                    io->pin_write(&(io->channels[i]), io->channels[i].pin_script[io->tick/2]);
 
                     break;
 
@@ -78,12 +79,12 @@ void rs_io_maintainer(struct rs_io_stu *io){
                 case RS_TICK_37_r1_read:
                 case RS_TICK_39_ack_read:
 
-                    if(io->channels[i].pin_read() != io->channels[i].pin_script[io->tick/2]){ // 信号线电平与脚本不一致
+                    if(io->pin_read(&(io->channels[i])) != io->channels[i].pin_script[io->tick/2]){ // 信号线电平与脚本不一致
                         if(io->channels[i].pin_script[io->tick/2]){ // 如果脚本为高电平，说明有其他设备拉低
                             flag_channel_change = 1;
                             io->bitmask_channel_change |= (1 << i);
                         }else { // 脚本电平为低电平，但是信号线却没有被强下拉拉低，认为线路故障
-                            io->channels[i].pin_write(1);
+                            io->pin_write(&(io->channels[i]), 1);
 
                             io->channels[i].status = RS_CHANNEL_STATE_broken;
                         }
@@ -92,7 +93,7 @@ void rs_io_maintainer(struct rs_io_stu *io){
                     
                 case RS_TICK_40_wire_release: // 通信完成，释放线路，并发送通知
 
-                    io->channels[i].pin_write(1);
+                    io->pin_write(&(io->channels[i]), 1);
                     flag_communication_over = 1;
 
                     break;
