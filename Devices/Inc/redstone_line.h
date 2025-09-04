@@ -25,6 +25,7 @@ typedef struct {
 struct rs_line_stu {
     rs_line_sig_state_e status;
     uint8_t level; // 红石信号强度
+    uint8_t bitmask_connection; // 各方向连接状态
 
     rs_line_led_t *leds;
 

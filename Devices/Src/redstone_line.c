@@ -15,6 +15,7 @@ void rs_line_init(struct rs_line_stu *rsl){
     }
 
     rsl->level = 0;
+    rsl->bitmask_connection = 0;
     rsl->status = RS_LINE_SIG_WAITTIG;
 }
 
@@ -45,7 +46,7 @@ void my_rs_io_callback_channel_change(struct rs_io_stu *io){
                         io->channels[i].pin_script[j] = 0;
                     }
                     // 设置该方向的 led 亮起
-                    my_rs_line.led_pin_write(i, 0);
+                    my_rs_line.bitmask_connection |= (1 << i);
                 }else { // 为其他方向传输红石信号
                     for(uint8_t j = (io->tick+1)/2; j < RS_CHANNEL_STEP_19_set_ack; j ++){
                         io->channels[i].pin_script[j] = 0;
@@ -62,7 +63,7 @@ void my_rs_io_callback_channel_change(struct rs_io_stu *io){
             for(uint8_t i = 0; i < RS_LINE_CH_NUM; i ++){
                 if(io->bitmask_channel_change & (1 << i)){
                     // 设置该方向的 led 亮起
-                    my_rs_line.led_pin_write(i, 0);
+                    my_rs_line.bitmask_connection |= (1 << i);
                 }
             }
         }
@@ -72,6 +73,11 @@ void my_rs_io_callback_channel_change(struct rs_io_stu *io){
 void my_rs_io_callback_communication_over(struct rs_io_stu *io){
     // 更新强度显示
     SEG_LED_show_num(&mySegLED, my_rs_line.level);
+    
+    // 更新连接状态显示
+    for(uint8_t i = 0; i < RS_LINE_CH_NUM; i ++){
+        my_rs_line.led_pin_write(i, my_rs_line.bitmask_connection & (1 << i));
+    }
 }
 
 
