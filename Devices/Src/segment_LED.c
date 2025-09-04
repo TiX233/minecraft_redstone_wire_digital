@@ -1,0 +1,93 @@
+#include "segment_LED.h"
+#include "scan_LED.h"
+
+const uint8_t seg_LED_num[16] = {
+    SEG_LED_SEGMENT_BITMASK_A | SEG_LED_SEGMENT_BITMASK_B | SEG_LED_SEGMENT_BITMASK_C | SEG_LED_SEGMENT_BITMASK_D | SEG_LED_SEGMENT_BITMASK_E | SEG_LED_SEGMENT_BITMASK_F, // 0
+    SEG_LED_SEGMENT_BITMASK_B | SEG_LED_SEGMENT_BITMASK_C, // 1
+    SEG_LED_SEGMENT_BITMASK_A | SEG_LED_SEGMENT_BITMASK_B | SEG_LED_SEGMENT_BITMASK_D | SEG_LED_SEGMENT_BITMASK_E | SEG_LED_SEGMENT_BITMASK_G, // 2
+    SEG_LED_SEGMENT_BITMASK_A | SEG_LED_SEGMENT_BITMASK_B | SEG_LED_SEGMENT_BITMASK_C | SEG_LED_SEGMENT_BITMASK_D | SEG_LED_SEGMENT_BITMASK_G, // 3
+    SEG_LED_SEGMENT_BITMASK_B | SEG_LED_SEGMENT_BITMASK_C | SEG_LED_SEGMENT_BITMASK_F | SEG_LED_SEGMENT_BITMASK_G, // 4
+    SEG_LED_SEGMENT_BITMASK_A | SEG_LED_SEGMENT_BITMASK_C | SEG_LED_SEGMENT_BITMASK_D | SEG_LED_SEGMENT_BITMASK_F | SEG_LED_SEGMENT_BITMASK_G, // 5
+    SEG_LED_SEGMENT_BITMASK_A | SEG_LED_SEGMENT_BITMASK_C | SEG_LED_SEGMENT_BITMASK_D | SEG_LED_SEGMENT_BITMASK_E | SEG_LED_SEGMENT_BITMASK_F | SEG_LED_SEGMENT_BITMASK_G, // 6
+    SEG_LED_SEGMENT_BITMASK_A | SEG_LED_SEGMENT_BITMASK_B | SEG_LED_SEGMENT_BITMASK_C, // 7
+    SEG_LED_SEGMENT_BITMASK_A | SEG_LED_SEGMENT_BITMASK_B | SEG_LED_SEGMENT_BITMASK_C | SEG_LED_SEGMENT_BITMASK_D | SEG_LED_SEGMENT_BITMASK_E | SEG_LED_SEGMENT_BITMASK_F | SEG_LED_SEGMENT_BITMASK_G, // 8
+    SEG_LED_SEGMENT_BITMASK_A | SEG_LED_SEGMENT_BITMASK_B | SEG_LED_SEGMENT_BITMASK_C | SEG_LED_SEGMENT_BITMASK_D | SEG_LED_SEGMENT_BITMASK_F | SEG_LED_SEGMENT_BITMASK_G, // 9
+    SEG_LED_SEGMENT_BITMASK_A | SEG_LED_SEGMENT_BITMASK_B | SEG_LED_SEGMENT_BITMASK_C | SEG_LED_SEGMENT_BITMASK_E | SEG_LED_SEGMENT_BITMASK_F | SEG_LED_SEGMENT_BITMASK_G, // A
+    SEG_LED_SEGMENT_BITMASK_C | SEG_LED_SEGMENT_BITMASK_D | SEG_LED_SEGMENT_BITMASK_E | SEG_LED_SEGMENT_BITMASK_F | SEG_LED_SEGMENT_BITMASK_G, // B
+    SEG_LED_SEGMENT_BITMASK_D | SEG_LED_SEGMENT_BITMASK_E | SEG_LED_SEGMENT_BITMASK_G, // C
+    SEG_LED_SEGMENT_BITMASK_B | SEG_LED_SEGMENT_BITMASK_C | SEG_LED_SEGMENT_BITMASK_D | SEG_LED_SEGMENT_BITMASK_E | SEG_LED_SEGMENT_BITMASK_G, // D
+    SEG_LED_SEGMENT_BITMASK_A | SEG_LED_SEGMENT_BITMASK_D | SEG_LED_SEGMENT_BITMASK_E | SEG_LED_SEGMENT_BITMASK_F | SEG_LED_SEGMENT_BITMASK_G, // E
+    SEG_LED_SEGMENT_BITMASK_A | SEG_LED_SEGMENT_BITMASK_E | SEG_LED_SEGMENT_BITMASK_F | SEG_LED_SEGMENT_BITMASK_G, // F
+};
+
+const SegmentLED_pin_map_stu_t mySegLED_pin_map[8] = {
+    [SEG_LED_SEGMENT_A] = {
+        .com = SCANLED_COM1,
+        .one = SCANLED_ONE1,
+    },
+    [SEG_LED_SEGMENT_B] = {
+        .com = SCANLED_COM1,
+        .one = SCANLED_ONE3,
+    },
+    [SEG_LED_SEGMENT_C] = {
+        .com = SCANLED_COM2,
+        .one = SCANLED_ONE3,
+    },
+    [SEG_LED_SEGMENT_D] = {
+        .com = SCANLED_COM2,
+        .one = SCANLED_ONE2,
+    },
+    [SEG_LED_SEGMENT_E] = {
+        .com = SCANLED_COM2,
+        .one = SCANLED_ONE1,
+    },
+    [SEG_LED_SEGMENT_F] = {
+        .com = SCANLED_COM1,
+        .one = SCANLED_ONE2,
+    },
+    [SEG_LED_SEGMENT_G] = {
+        .com = SCANLED_COM1,
+        .one = SCANLED_ONE4,
+    },
+    // [SEG_LED_SEGMENT_DP] = {
+    //     .com = SCANLED_COM2,
+    //     .one = SCANLED_ONE4,
+    // },
+};
+
+
+void SEG_LED_show_num(struct SegmentLED_stu *led, SEG_LED_NUM_INDEX_t numx){
+    if(numx < 0x0 || numx > 0xF){
+        return; // 无效数字
+    }
+
+    for(uint8_t i = 0; i < 7; i++){
+        if(seg_LED_num[numx] & (1 << i)){
+            led->write_seg_pin(led, i, 0);
+        } else {
+            led->write_seg_pin(led, i, 1);
+        }
+    }
+    
+}
+
+void SEG_LED_clean_num(struct SegmentLED_stu *led){
+
+    for(uint8_t i = 0; i < 7; i++){
+        led->write_seg_pin(led, i, 1);
+    }
+}
+
+void mySegLED_write_seg_pin(struct SegmentLED_stu *led, SEG_LED_SEGMENT_INDEX_t seg, uint8_t pin_state){
+    if(seg >= 8){
+        return; // 无效段
+    }
+
+    const SegmentLED_pin_map_stu_t *map = (led->segment_pin_map + seg);
+    
+    if(pin_state){
+        scanLED_write_xy(&myScanLED, map->com, map->one, 0);
+    } else {
+        scanLED_write_xy(&myScanLED, map->com, map->one, 1);
+    }
+}
