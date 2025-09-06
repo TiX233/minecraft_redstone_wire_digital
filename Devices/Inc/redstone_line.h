@@ -1,3 +1,13 @@
+/**
+ * @file redstone_line.h
+ * @author realTiX
+ * @brief 数字方案红石线相关内容
+ * @version 0.1
+ * @date 2025-09-04
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
 #ifndef __RS_LINE_H__
 #define __RS_LINE_H__
 

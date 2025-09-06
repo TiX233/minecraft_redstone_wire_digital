@@ -1,3 +1,13 @@
+/**
+ * @file redstone.h
+ * @author realTiX
+ * @brief 数字红石 io 管理器
+ * @version 0.1
+ * @date 2025-09-04
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
 #ifndef __REDSTONE_H__
 #define __REDSTONE_H__
 

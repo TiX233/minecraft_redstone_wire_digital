@@ -1,3 +1,13 @@
+/**
+ * @file scan_LED.h
+ * @author realTiX
+ * @brief 简易的扫描 led 显示库
+ * @version 0.1
+ * @date 2025-09-03
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
 #ifndef __SCAN_LED_H__
 #define __SCAN_LED_H__
 

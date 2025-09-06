@@ -1,3 +1,13 @@
+/**
+ * @file segment_LED.h
+ * @author realTiX
+ * @brief 简易的数码管显示库
+ * @version 0.1
+ * @date 2025-07-09
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
 #ifndef __SEGMENT_LED_H__
 #define __SEGMENT_LED_H__
 
