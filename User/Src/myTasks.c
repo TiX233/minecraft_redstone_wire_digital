@@ -73,8 +73,8 @@ struct mt_Task_stu task_scanLED = {
     },
 
     .timer = {
-        .tick_counts = 4,
-        .tick_reload = 4, // 大于 4 相机拍会有频闪，大于 8 会被肉眼看出闪烁
+        .tick_counts = 1,
+        .tick_reload = 1, // 大于 4 相机拍会有频闪，，大于 8 会被肉眼看出闪烁
 
         .topic = &(task_scanLED.topic),
         .next = NULL,
