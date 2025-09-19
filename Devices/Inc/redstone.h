@@ -1,7 +1,7 @@
 /**
  * @file redstone.h
  * @author realTiX
- * @brief 数字红石 io 管理器
+ * @brief 数字红石 io 管理器（改名叫 ios 会不会更好？）
  * @version 0.1
  * @date 2025-09-04
  * 

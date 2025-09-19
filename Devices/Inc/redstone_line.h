@@ -1,7 +1,7 @@
 /**
  * @file redstone_line.h
  * @author realTiX
- * @brief 数字方案红石线相关内容
+ * @brief 数字方案红石线相关内容，awc 百度翻译怎么这么坏，其实是 wire，给我翻译成 line 了
  * @version 0.1
  * @date 2025-09-04
  * 

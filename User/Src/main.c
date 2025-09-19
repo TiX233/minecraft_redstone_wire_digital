@@ -38,6 +38,7 @@
 /* Private define ------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 
+// 扫描 led 的 com 端引脚映射表
 scanLED_pin_map_stu_t myScanLED_com_map[] = {
     [SCANLED_COM1] = {
         .port = GPIOB,
@@ -53,6 +54,7 @@ scanLED_pin_map_stu_t myScanLED_com_map[] = {
     },
 };
 
+// 扫描 led 的 one 端引脚映射表
 scanLED_pin_map_stu_t myScanLED_one_map[] = {
     [SCANLED_ONE1] = {
         .port = GPIOB,
@@ -72,8 +74,10 @@ scanLED_pin_map_stu_t myScanLED_one_map[] = {
     },
 };
 
+// 扫描 led 缓存
 uint8_t myScanLED_buffer[3];
 
+// 扫描 led 对象结构体
 struct scanLED_stu myScanLED = {
     .num_com = 3,
     .num_one = 4,
@@ -88,6 +92,7 @@ struct scanLED_stu myScanLED = {
     .write_pin = myScanLED_write_pin,
 };
 
+// 数码管对象结构体，将数码管的写引脚映射到写扫描 led 的缓存上
 struct SegmentLED_stu mySegLED = {
     .segment_pin_map = mySegLED_pin_map,
 
@@ -95,6 +100,7 @@ struct SegmentLED_stu mySegLED = {
 };
 
 
+// 四个方向的红石通道对象的列表
 struct rs_channel_stu rs_line_chs[] = {
     [RS_LINE_CH1_up] = {
         .status = RS_CHANNEL_STATE_release,
@@ -133,6 +139,7 @@ struct rs_channel_stu rs_line_chs[] = {
     },
 };
 
+// 红石链接方向指示灯，将写引脚操作映射到写扫描 led 的缓存上
 rs_line_led_t rs_line_leds[] = {
     [RS_LINE_CH1_up] = {
         .port = SCANLED_COM3,
@@ -155,6 +162,7 @@ rs_line_led_t rs_line_leds[] = {
     },
 };
 
+// 红石线对象结构体
 struct rs_line_stu my_rs_line = {
 
     .leds = rs_line_leds,
@@ -209,7 +217,7 @@ int main(void)
 
     rs_line_init(&my_rs_line);
 
-    LOG_FMT("\nRed stone line init over in %dms.\n", rtx_Sys_get_tick());
+    LOG_FMT("\nRedstone wire init over in %dms.\n", rtx_Sys_get_tick());
 
     rtx_Sys_schedule_start(); // 开启调度
     
